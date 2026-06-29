@@ -1,0 +1,19 @@
+# Evitar subir dependencias (se instalan solas en el servidor)
+node_modules
+dist
+npm-debug.log
+.DS_Store
+
+# Archivos de configuración local y secretos
+.env
+.env.local
+
+# Carpetas de desarrollo y configuración del editor
+.git
+.vscode
+.idea
+
+# Archivos propios de Windows que no sirven en la nube
+*.log
+*.tmp
+*.bak
