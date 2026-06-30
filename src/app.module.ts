@@ -12,10 +12,15 @@ import { RegisterController } from './auth/register.controller';
       type: 'postgres',
       url: process.env.DATABASE_URL,
       entities: [User],
-      synchronize: true,
+      synchronize: false, // Desactivado para producción
       logging: true,
       ssl: {
         rejectUnauthorized: false,
+      },
+      extra: {
+        ssl: {
+          rejectUnauthorized: false,
+        },
       },
     }),
     TypeOrmModule.forFeature([User]), 
