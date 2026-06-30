@@ -18,16 +18,24 @@ let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
 exports.AppModule = AppModule = __decorate([
+    (0, common_1.Global)(),
     (0, common_1.Module)({
         imports: [
-            typeorm_1.TypeOrmModule.forFeature([user_entity_1.User]),
+            typeorm_1.TypeOrmModule.forRoot({
+                type: 'postgres',
+                url: process.env.DATABASE_URL,
+                entities: [user_entity_1.User, __dirname + '/**/*.entity{.ts,.js}'],
+                synchronize: false,
+                logging: true,
+                ssl: { rejectUnauthorized: false },
+                extra: { connectionTimeoutMillis: 10000 },
+                autoLoadEntities: true,
+            }),
             users_module_1.UsersModule,
             network_module_1.NetworkModule,
         ],
-        controllers: [
-            auth_controller_1.AuthController,
-            register_controller_1.RegisterController
-        ],
+        exports: [typeorm_1.TypeOrmModule],
+        controllers: [auth_controller_1.AuthController, register_controller_1.RegisterController],
         providers: [],
     })
 ], AppModule);
