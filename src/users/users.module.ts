@@ -3,13 +3,15 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersController } from './users.controller';
 import { UsersService } from './users.service';
 import { User } from './entities/user.entity';
-import { UserClosure } from './entities/user-closure.entity'; // Importa la nueva entidad
+import { UserClosure } from './entities/user-closure.entity'; 
 import { NetworkModule } from '../network/network.module';
 
 @Module({
   imports: [
-    // Registramos AMBAS entidades para que el servicio pueda usarlas
+    // Comentamos la carga de entidades para el diagnóstico del servidor
+    /*
     TypeOrmModule.forFeature([User, UserClosure]), 
+    */
     NetworkModule,
   ],
   controllers: [UsersController],
