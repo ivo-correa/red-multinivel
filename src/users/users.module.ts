@@ -4,25 +4,33 @@ import { DataSource } from 'typeorm';
 import { UsersController } from './users.controller';
 import { UsersService } from './users.service';
 import { User } from './entities/user.entity';
-import { NetworkModule } from '../network/network.module'; // Restaurado
+import { NetworkModule } from '../network/network.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([User]), 
-    NetworkModule, // Restaurado
+    NetworkModule,
   ],
   controllers: [UsersController],
   providers: [
     UsersService,
     {
-      // Proporcionamos el TreeRepository explícitamente para evitar el error UnknownDependenciesException
+      // Esto registra el TreeRepository para que el servicio lo encuentre
       provide: getRepositoryToken(User),
-      useFactory: (dataSource: DataSource) => {
-        return dataSource.getTreeRepository(User);
-      },
+      useFactory: (dataSource: DataSource) => dataSource.getTreeRepository(User),
       inject: [DataSource],
     },
+    // Añadimos esto para que si el RegisterController busca "UserRepository"
+    // NestJS sepa que debe darle el mismo TreeRepository
+    {
+      provide: 'UserRepository', 
+      useExisting: getRepositoryToken(User),
+    },
   ],
-  exports: [UsersService], // Exportamos el servicio por si otros módulos lo usan
+  exports: [
+    UsersService, 
+    'UserRepository', // Exportamos el alias para que RegisterController pueda usarlo
+    TypeOrmModule
+  ],
 })
 export class UsersModule {}

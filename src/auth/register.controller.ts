@@ -1,46 +1,54 @@
 import { Controller, Post, Body, HttpException, HttpStatus } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { User } from '../users/entities/user.entity';
+import { UsersService } from '../users/users.service';
 
 @Controller('auth')
 export class RegisterController {
-  constructor(
-    @InjectRepository(User)
-    private readonly userRepository: Repository<User>,
-  ) {}
+  // Ahora inyectamos el servicio, NO el repositorio
+  constructor(private readonly usersService: UsersService) {}
 
   @Post('register')
   async register(@Body() body: any) {
-    const { nombre, email, password, numeroIdentificacion, direccionResidencia, paisResidencia } = body;
+    const { 
+      nombre, 
+      email, 
+      password, 
+      numeroIdentificacion, 
+      direccionResidencia, 
+      paisResidencia 
+    } = body;
 
-    // 1. Validación de seguridad estricta
+    // 1. Validación de seguridad básica
     if (!nombre?.trim() || !email?.trim() || !password || password.length < 4) {
-      throw new HttpException('Nombre, email y contraseña (min 4 caracteres) son obligatorios', HttpStatus.BAD_REQUEST);
+      throw new HttpException(
+        'Nombre, email y contraseña (min 4 caracteres) son obligatorios', 
+        HttpStatus.BAD_REQUEST
+      );
     }
 
     try {
-      // 2. Crear instancia (con trim para evitar basura)
-      const nuevoUsuario = this.userRepository.create({
+      // 2. Delegamos la lógica al servicio
+      // Usamos el método addReferral que ya tienes en tu UsersService
+      await this.usersService.addReferral({
         nombre: nombre.trim(),
         email: email.trim().toLowerCase(),
         password: password, 
         numeroIdentificacion: numeroIdentificacion?.trim(),
         direccionResidencia: direccionResidencia?.trim(),
         paisResidencia: paisResidencia?.trim()
-      });
+      }, null); // null porque es un registro de usuario raíz
 
-      // 3. Guardar en base de datos
-      await this.userRepository.save(nuevoUsuario);
-      
       return { 
         success: true, 
         message: 'Usuario raíz creado exitosamente' 
       };
+      
     } catch (error) {
-      // Si llega aquí, es probablemente un error de email duplicado (UNIQUE constraint)
       console.error(error);
-      throw new HttpException('El correo electrónico ya está registrado', HttpStatus.CONFLICT);
+      // 3. Manejo de errores
+      throw new HttpException(
+        'El correo electrónico ya está registrado o hubo un error al crear el usuario', 
+        HttpStatus.CONFLICT
+      );
     }
   }
 }

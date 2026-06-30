@@ -1,4 +1,4 @@
-﻿import { Module, Global } from '@nestjs/common';
+﻿import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersModule } from './users/users.module';
 import { NetworkModule } from './network/network.module';
@@ -6,7 +6,6 @@ import { User } from './users/entities/user.entity';
 import { AuthController } from './auth.controller';
 import { RegisterController } from './auth/register.controller';
 
-@Global() // Hacemos el módulo global
 @Module({
   imports: [
     TypeOrmModule.forRoot({
@@ -22,7 +21,6 @@ import { RegisterController } from './auth/register.controller';
     UsersModule,
     NetworkModule,
   ],
-  exports: [TypeOrmModule], // Exportamos explícitamente
   controllers: [AuthController, RegisterController],
   providers: [],
 })
