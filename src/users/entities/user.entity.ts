@@ -1,33 +1,40 @@
-﻿import { Entity, PrimaryGeneratedColumn, Column, Tree, TreeParent, TreeChildren } from 'typeorm';
+﻿import { 
+  Entity, 
+  PrimaryGeneratedColumn, 
+  Column, 
+  Tree, 
+  TreeParent, 
+  TreeChildren 
+} from 'typeorm';
 
-@Entity('user')
-@Tree("closure-table")
+@Entity('user') // Nombre de la tabla base
+@Tree("closure-table") // Estrategia de árbol mediante tabla de cierre
 export class User {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
+  @Column({ type: 'varchar', length: 255 })
   nombre: string;
 
-  @Column({ unique: true })
+  @Column({ unique: true, type: 'varchar', length: 255 })
   email: string;
 
-  @Column({ nullable: false })
+  @Column({ type: 'varchar', length: 255 })
   password: string;
 
   @Column({ type: 'varchar', length: 255, nullable: true })
   numeroIdentificacion: string;
 
-  // Nuevos campos solicitados
   @Column({ type: 'varchar', length: 255, nullable: true })
   direccionResidencia: string;
 
   @Column({ type: 'varchar', length: 100, nullable: true })
   paisResidencia: string;
 
-  @TreeParent()
+  // Relación jerárquica
+  @TreeParent({ onDelete: 'SET NULL' })
   parent: User;
 
-  @TreeChildren()
+  @TreeChildren({ cascade: true })
   children: User[];
 }

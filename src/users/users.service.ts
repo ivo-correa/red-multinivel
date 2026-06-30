@@ -1,11 +1,13 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, Inject } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { TreeRepository } from 'typeorm';
+import { TreeRepository, Repository } from 'typeorm';
 import { User } from './entities/user.entity';
 
 @Injectable()
 export class UsersService {
   constructor(
+    // Inyectamos el repositorio usando el decorador estándar, 
+    // pero declaramos explícitamente el tipo TreeRepository
     @InjectRepository(User)
     private readonly userRepo: TreeRepository<User>,
   ) {}
@@ -39,18 +41,15 @@ export class UsersService {
     return await this.userRepo.save(user);
   }
 
-  // --- MÉTODOS DE RED (CORREGIDOS) ---
+  // --- MÉTODOS DE RED (ÁRBOL) ---
 
   /**
    * Retorna los líderes raíz junto con todo su árbol de descendientes.
-   * Usamos findDescendantsTree para que el objeto 'children' se llene
-   * automáticamente consultando la tabla 'user_closure'.
    */
   async findAllRoots() {
+    // findRoots() es un método exclusivo de TreeRepository
     const roots = await this.userRepo.findRoots();
     
-    // Al mapear cada raíz con findDescendantsTree, NestJS construye 
-    // el JSON jerárquico que tu app necesita.
     return await Promise.all(
       roots.map((root) => this.userRepo.findDescendantsTree(root))
     );
@@ -63,6 +62,7 @@ export class UsersService {
     const user = await this.userRepo.findOne({ where: { id } });
     if (!user) throw new NotFoundException(`Usuario con ID ${id} no encontrado`);
     
+    // findDescendantsTree construye el JSON jerárquico
     return await this.userRepo.findDescendantsTree(user);
   }
 

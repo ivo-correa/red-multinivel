@@ -1,21 +1,28 @@
 import { Module } from '@nestjs/common';
-import { TypeOrmModule, getRepositoryToken } from '@nestjs/typeorm'; // Cambiamos el import
+import { TypeOrmModule, getRepositoryToken } from '@nestjs/typeorm';
+import { DataSource } from 'typeorm';
 import { UsersController } from './users.controller';
 import { UsersService } from './users.service';
 import { User } from './entities/user.entity';
-import { NetworkModule } from '../network/network.module';
-import { DataSource } from 'typeorm'; // Necesitamos esto para la factory
+import { NetworkModule } from '../network/network.module'; // Restaurado
 
 @Module({
-  imports: [TypeOrmModule.forFeature([User])],
+  imports: [
+    TypeOrmModule.forFeature([User]), 
+    NetworkModule, // Restaurado
+  ],
   controllers: [UsersController],
   providers: [
     UsersService,
     {
-      provide: getRepositoryToken(User), // Usamos el token estándar
-      useFactory: (dataSource: DataSource) => dataSource.getTreeRepository(User),
-      inject: [DataSource], // Inyectamos el DataSource principal
+      // Proporcionamos el TreeRepository explícitamente para evitar el error UnknownDependenciesException
+      provide: getRepositoryToken(User),
+      useFactory: (dataSource: DataSource) => {
+        return dataSource.getTreeRepository(User);
+      },
+      inject: [DataSource],
     },
   ],
+  exports: [UsersService], // Exportamos el servicio por si otros módulos lo usan
 })
 export class UsersModule {}
