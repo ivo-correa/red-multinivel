@@ -4,22 +4,20 @@ import { UsersModule } from './users/users.module';
 import { NetworkModule } from './network/network.module';
 import { User } from './users/entities/user.entity';
 import { AuthController } from './auth.controller';
-import { RegisterController } from './auth/register.controller'; // Importa el nuevo controlador
+import { RegisterController } from './auth/register.controller';
 
 @Module({
   imports: [
     TypeOrmModule.forRoot({
-      type: 'mysql',
-      host: 'localhost',
-      port: 3306,
-      username: 'root',
-      password: '',
-      database: 'red_multinivel_pro',
+      type: 'postgres',
+      url: process.env.DATABASE_URL,
       entities: [User],
       synchronize: true,
       logging: true,
+      ssl: {
+        rejectUnauthorized: false,
+      },
     }),
-    // Esta línea es CRÍTICA: permite que los controladores usen UserRepository
     TypeOrmModule.forFeature([User]), 
     UsersModule,
     NetworkModule,
