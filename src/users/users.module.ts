@@ -1,20 +1,21 @@
 import { Module } from '@nestjs/common';
-import { TypeOrmModule } from '@nestjs/typeorm';
+import { TypeOrmModule, getTreeRepositoryToken } from '@nestjs/typeorm'; // Importa el token
 import { UsersController } from './users.controller';
 import { UsersService } from './users.service';
 import { User } from './entities/user.entity';
-import { UserClosure } from './entities/user-closure.entity'; 
 import { NetworkModule } from '../network/network.module';
 
 @Module({
-  imports: [
-    // Comentamos la carga de entidades para el diagnóstico del servidor
-    
-    TypeOrmModule.forFeature([User, UserClosure]), 
-    
-    NetworkModule,
-  ],
+  imports: [TypeOrmModule.forFeature([User])],
   controllers: [UsersController],
-  providers: [UsersService],
+  providers: [
+    UsersService,
+    // Esto fuerza a que NestJS entienda que este repositorio es un TreeRepository
+    {
+      provide: getTreeRepositoryToken(User),
+      useFactory: (connection) => connection.getTreeRepository(User),
+      inject: ['CONNECTION'], // O el token de tu conexión
+    },
+  ],
 })
 export class UsersModule {}
