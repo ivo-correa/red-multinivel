@@ -8,11 +8,11 @@ import { RegisterController } from './auth/register.controller';
 
 @Module({
   imports: [
-    // 1. Configuración de conexión única y centralizada
+    // 1. Configuración centralizada
     TypeOrmModule.forRoot({
       type: 'postgres',
       url: process.env.DATABASE_URL,
-      entities: [User],
+      entities: [User, __dirname + '/**/*.entity{.ts,.js}'], // Asegura que encuentre todas las entidades
       synchronize: false,
       logging: true,
       ssl: {
@@ -21,13 +21,11 @@ import { RegisterController } from './auth/register.controller';
       extra: {
         connectionTimeoutMillis: 10000,
       },
-      // Habilitar esto ayuda a evitar errores de inyección en tiempo de carga
       autoLoadEntities: true, 
     }),
     
-    // 2. Registramos entidades globales si es necesario, 
-    // pero recuerda que cada módulo debe registrar sus propias entidades
-    TypeOrmModule.forFeature([User]), 
+    // 2. Eliminamos forFeature([User]) de aquí, 
+    // debe estar solo en los módulos hijos (UsersModule)
     
     UsersModule,
     NetworkModule,
