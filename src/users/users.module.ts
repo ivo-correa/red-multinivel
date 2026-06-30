@@ -9,9 +9,9 @@ import { NetworkModule } from '../network/network.module';
 @Module({
   imports: [
     // Comentamos la carga de entidades para el diagnóstico del servidor
-    /*
+    
     TypeOrmModule.forFeature([User, UserClosure]), 
-    */
+    
     NetworkModule,
   ],
   controllers: [UsersController],
