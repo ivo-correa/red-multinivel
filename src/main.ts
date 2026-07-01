@@ -16,15 +16,17 @@ async function bootstrap() {
       forbidNonWhitelisted: true 
     }));
     
+    // Render inyecta dinámicamente el puerto
     const port = process.env.PORT || 3000;
     
-    // Escuchar en todas las interfaces de red
+    // Escuchar en todas las interfaces de red (0.0.0.0) es obligatorio en Render
     await app.listen(port, '0.0.0.0');
     
     logger.log(`Application is running on port: ${port}`);
   } catch (error) {
-    // Esto es vital: si falla la base de datos, lo veremos en los logs de Render
-    console.error('Error crítico durante el inicio de la aplicación:', error);
+    logger.error('Error crítico durante el inicio de la aplicación:', error);
+    // En producción, si la base de datos falla al arrancar, 
+    // el proceso debe terminar para que Render lo intente de nuevo.
     process.exit(1);
   }
 }
