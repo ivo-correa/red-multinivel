@@ -3,10 +3,10 @@ export declare class UsersController {
     private readonly usersService;
     constructor(usersService: UsersService);
     getMyNetwork(id: number): Promise<any>;
-    createReferral(userData: any, sponsorId?: string): Promise<import("./entities/user.entity").User[]>;
-    createRoot(userData: any): Promise<import("./entities/user.entity").User[]>;
-    getAllRoots(): Promise<import("./entities/user.entity").User[]>;
-    getOne(id: string): Promise<import("./entities/user.entity").User>;
-    update(id: string, updateData: any): Promise<import("./entities/user.entity").User>;
+    createReferral(userData: any, sponsorId?: string): Promise<any>;
+    createRoot(userData: any): Promise<any>;
+    getAllRoots(): Promise<any>;
+    getOne(id: string): Promise<any>;
+    update(id: string, updateData: any): Promise<any>;
     getChildren(id: string): Promise<any>;
 }
