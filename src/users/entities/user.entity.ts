@@ -7,7 +7,7 @@
   TreeChildren 
 } from 'typeorm';
 
-@Entity('user') // Nombre de la tabla base
+@Entity('users_table') // Nombre de la tabla base
 @Tree("closure-table") // Estrategia de árbol mediante tabla de cierre
 export class User {
   @PrimaryGeneratedColumn()

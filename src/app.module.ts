@@ -9,14 +9,13 @@ import { RegisterController } from './auth/register.controller';
 @Module({
   imports: [
     TypeOrmModule.forRoot({
-      type: 'postgres',
       url: process.env.DATABASE_URL,
-      entities: [User, __dirname + '/**/*.entity{.ts,.js}'],
-      synchronize: false,
-      logging: true,
-      ssl: { rejectUnauthorized: false },
-      extra: { connectionTimeoutMillis: 10000 },
-      autoLoadEntities: true, 
+      type: 'postgres',
+      // Para la base de datos interna de Render, usualmente no se requiere SSL estricto, 
+      // pero mantenemos la configuración flexible para asegurar la conexión.
+      ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false,
+      autoLoadEntities: true,
+      synchronize: true,
     }),
     UsersModule,
     NetworkModule,
